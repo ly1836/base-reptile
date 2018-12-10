@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.winter">
+    
+    <select id="getClassifyByCondition" resultType="com.sz.winter.basereptile.model.Classify">
+        select id,createDate_ createDate,lastUpdate_ lastUpdate,status_ status,websitId_ websitId,classify_ classify,startListUrl_ startListUrl
+        from classify
+        <where>
+            <if test="websitId != null">
+                websitId_ = #{websitId}
+            </if>
+            <if test="classify != null">
+                and classify_ = #{classify}
+            </if>
+            <if test="status != null">
+                and status_ = #{status}
+            </if>
+        </where>
+    </select>
+    
+</mapper>

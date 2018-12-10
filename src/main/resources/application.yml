@@ -1,0 +1,37 @@
+#代理配置
+base:
+  proxy:
+    host:
+    port:
+  #redis缓存配置
+  redis:
+    redishost: 127.0.0.1
+    redisPort: 6379
+    redispassword: ly@19961836.
+  runWebsite:
+      ids: 1
+
+#数据源配置
+spring:
+  datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/reptile?useUnicode=true&characterEncoding=gbk&zeroDateTimeBehavior=convertToNull&useSSL=false
+      username: root
+      password: admin
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      filters: stat,wall,log4j
+      logSlowSql: true
+
+
+
+

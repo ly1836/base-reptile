@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.winter">
+
+    <!-- 批量插入列表 -->
+    <insert id="insertBatchClassifyList" parameterType="java.util.List">
+        INSERT INTO classify_list(createDate_, lastUpdate_, status_, websitId_, classifyId_, surfacePlotUrl_, describe_, duration_, heat_,contextUrl_)
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (#{item.createDate},#{item.lastUpdate},#{item.status},#{item.websitId},#{item.classifyId},#{item.surfacePlotUrl},#{item.describe},#{item.duration},#{item.heat},#{item.contextUrl})
+        </foreach>
+    </insert>
+
+
+    <!-- 获取全部列表 -->
+    <select id="listCalssifyList" resultType="com.sz.winter.basereptile.model.ClassifyList">
+        select id,createDate_ createDate, lastUpdate_ lastUpdate, status_ status, websitId_ websitId, classifyId_ classifyId,
+        surfacePlotUrl_ surfacePlotUrl, describes_ as describes, duration_ duration, heat_ heat,contextUrl_ contextUrl,isDownload_ isDownload
+        from classify_list
+    </select>
+
+</mapper>
