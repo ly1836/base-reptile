@@ -20,6 +20,16 @@ public class ClassifyListService extends BaseDao {
         getSession().insert("insertBatchClassifyList",classifyLists);
     }
 
+    /**
+     * <p>
+     *     更新列表详情信息
+     * </p>
+     * @param classifyLists 列表详情
+     */
+    public void updateClassifys(ClassifyList classifyLists){
+        getSession().insert("updateClassifyList",classifyLists);
+    }
+
 
     /**
      * <p>
@@ -38,6 +48,16 @@ public class ClassifyListService extends BaseDao {
      * @return List
      */
     public List<ClassifyList> getNotDowloadVideo(){
-        return getSession().selectList("getNotDowloadVideo");
+        return getSession().selectList("getNotDowloadImage");
+    }
+
+    /**
+     * <p>
+     *     获取下封面图列表
+     * </p>
+     * @return List
+     */
+    public List<ClassifyList> getNotDowloadImage(){
+        return getSession().selectList("getNotDowloadImage");
     }
 }

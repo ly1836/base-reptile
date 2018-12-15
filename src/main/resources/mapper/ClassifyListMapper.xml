@@ -18,7 +18,7 @@
     <!-- 获取全部列表 -->
     <select id="listCalssifyList" resultType="com.sz.winter.basereptile.model.ClassifyList">
         select <include refid="classifyListSql"/>
-        from classify_list
+        from classify_list and status_ = 1
     </select>
 
     <!-- 获取未拉去的视频信息列表 -->
@@ -27,6 +27,34 @@
         from classify_list cl  where id not in (SELECT classifyListId_ from video_fragmentation )
         and cl.status_ = 1
     </select>
+
+    <!-- 获取未拉去的封面图信息列表 -->
+    <select id="getNotDowloadImage" resultType="com.sz.winter.basereptile.model.ClassifyList">
+        SELECT <include refid="classifyListSql"/>
+        from classify_list cl  where cl.surfacePlotDir_ is null
+        and cl.status_ = 1
+    </select>
+
+    <!-- 更新列表详情信息 -->
+    <update id="updateClassifyList" parameterType="com.sz.winter.basereptile.model.ClassifyList">
+        update classify_list
+        <set>
+            <if test="id!=null">id=#{id,jdbcType=BIGINT},</if>
+            <if test="createDate!=null">createDate_=#{createDate,jdbcType=TIMESTAMP},</if>
+            <if test="lastUpdate!=null">lastUpdate_=#{lastUpdate,jdbcType=TIMESTAMP},</if>
+            <if test="status!=null">status_=#{status},</if>
+            <if test="websitId!=null">websitId_=#{websitId},</if>
+            <if test="classifyId!=null">classifyId_=#{classifyId},</if>
+            <if test="surfacePlotUrl!=null">surfacePlotUrl_=#{surfacePlotUrl},</if>
+            <if test="describes!=null">describes_=#{describes},</if>
+            <if test="duration!=null">duration_=#{duration},</if>
+            <if test="heat!=null">heat_=#{heat},</if>
+            <if test="contextUrl!=null">contextUrl_=#{contextUrl},</if>
+            <if test="isDownload!=null">isDownload_=#{isDownload},</if>
+            <if test="surfacePlotDir!=null">surfacePlotDir_=#{surfacePlotDir}</if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
 
 </mapper>

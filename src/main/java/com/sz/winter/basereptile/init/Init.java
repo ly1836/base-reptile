@@ -51,7 +51,11 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
             //加载列表信息到Redis中
             //loadClassifyListInfoToRedis();
 
-            new Thread(()->classifyListModule.getVideoInfo()).start();
+            //获取视频分信息
+            //new Thread(()->classifyListModule.getVideoInfo()).start();
+
+            //下载视频封面图
+            new Thread(() -> classifyListModule.dowloadSurfacePlot()).start();
 
         } catch (Exception ex) {
             logger.error("==============项目启动异常:{}============================", ex);

@@ -8,6 +8,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
+import java.io.*;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +17,7 @@ import java.util.Map;
 //@SpringBootTest
 public class BaseReptileApplicationTests {
 
-    @Test
+    //@Test
     public void contextLoads() {
         Map<String,Object> cookieMap = new HashMap<>();
         //cookieMap.put("Cookie",cookie);
@@ -45,8 +47,42 @@ public class BaseReptileApplicationTests {
 
 
         }
+    }
 
 
+    //@Test
+    public void compoundVideo(){
+        try{
+            String fileName = "E:\\1.ts";
+            //String website = "https://lianxiangfiles.oss-cn-beijing.aliyuncs.com/video/activity/cf_znq.mp4";
+
+            //System.out.println("Downloading File From: " + website);
+
+            //URL url = new URL(website);
+            //InputStream inputStream = url.openStream();
+            InputStream inputStream = new FileInputStream(new File("E:\\2.ts"));
+            OutputStream outputStream = new FileOutputStream(fileName,true);
+            System.out.println(inputStream.available());
+
+            byte[] buffer = new byte[2048];
+
+            int length = 0;
+
+            int sum = 0;
+            while ((length = inputStream.read(buffer)) != -1) {
+                System.out.println("Buffer Read of length: " + length);
+                sum += length;
+                outputStream.write(buffer, 0, length);
+            }
+
+            inputStream.close();
+            outputStream.close();
+
+            System.out.println("sum:" + sum);
+
+        } catch(Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
     }
 
 }

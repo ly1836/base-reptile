@@ -28,4 +28,14 @@ public class VideoFragmentationService extends BaseDao {
     public void insertVideoFragmentations(VideoFragmentation videoFragmentations){
         getSession().insert("insertVideoFragmentation",videoFragmentations);
     }
+
+    /**
+     * <p>
+     *     获取分片视频信息
+     * </p>
+     * @return List
+     */
+    public List<VideoFragmentation> getVideoFragmentationList(){
+        return getSession().selectList("selectVideoFragmentationList");
+    }
 }

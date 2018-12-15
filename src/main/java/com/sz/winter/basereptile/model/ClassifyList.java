@@ -33,6 +33,9 @@ public class ClassifyList extends BaseModel {
     //是否下载 0:未下载  1:已下载  2:下载中
     private Integer isDownload;
 
+    //封面图磁盘路径
+    private String surfacePlotDir;
+
     public Long getWebsitId() {
         return websitId;
     }
@@ -96,6 +99,14 @@ public class ClassifyList extends BaseModel {
 
     public void setIsDownload(Integer isDownload) {
         this.isDownload = isDownload;
+    }
+
+    public String getSurfacePlotDir() {
+        return surfacePlotDir;
+    }
+
+    public void setSurfacePlotDir(String surfacePlotDir) {
+        this.surfacePlotDir = surfacePlotDir;
     }
 
     public ClassifyList() {

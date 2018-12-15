@@ -25,6 +25,10 @@ public class Endpoint {
 
     protected String host = "http://23.225.123.161:1433";
 
+    protected String surfacePlotDir = "F:\\chabijiujiu\\image\\";
+
+    protected String surfacePlotsuffix = ".jpg";
+
     public Long getWebsitId() {
         return websitId;
     }
@@ -35,5 +39,13 @@ public class Endpoint {
 
     public String getHost() {
         return host;
+    }
+
+    public String getSurfacePlotDir() {
+        return surfacePlotDir;
+    }
+
+    public String getSurfacePlotsuffix() {
+        return surfacePlotsuffix;
     }
 }

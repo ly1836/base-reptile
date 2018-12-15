@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="dao.winter">
+    <sql id="fragmentationColumn">id,createDate_ createDate, lastUpdate_ lastUpdate, status_ status,classifyListId_ classifyListId,palyload_ palyload_,dowloadType_ dowloadType_</sql>
 
     <!-- 批量插入视频分片信息 -->
     <insert id="insertBatchVideoFragmentation" parameterType="java.util.List">
@@ -17,5 +18,15 @@
         INSERT INTO video_fragmentation(createDate_, lastUpdate_, status_, classifyListId_, palyload_,dowloadType_)
         VALUES (#{createDate},#{lastUpdate},#{status},#{classifyListId},#{palyload},#{dowloadType})
     </insert>
+
+    <!-- 获取分片视频信息 -->
+    <select id="selectVideoFragmentationList" parameterType="com.sz.winter.basereptile.model.VideoFragmentation"
+            resultType="com.sz.winter.basereptile.model.VideoFragmentation">
+        select <include refid="fragmentationColumn"/>
+        from video_fragmentation where status_ = 1
+        <if test="dowloadType != null">
+            and dowloadType_ = #{dowloadType}
+        </if>
+    </select>
 
 </mapper>
