@@ -30,4 +30,14 @@ public class ClassifyListService extends BaseDao {
     public List<ClassifyList> listCalssifyList(){
         return getSession().selectList("listCalssifyList");
     }
+
+    /**
+     * <p>
+     *     获取未拉去的视频信息列表
+     * </p>
+     * @return List
+     */
+    public List<ClassifyList> getNotDowloadVideo(){
+        return getSession().selectList("getNotDowloadVideo");
+    }
 }

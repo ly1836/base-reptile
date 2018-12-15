@@ -308,6 +308,7 @@ public class HttpUtilWithPool {
             HttpEntity entity = response.getEntity();
             String result = EntityUtils.toString(entity, "utf-8");
             EntityUtils.consume(entity);
+
             return result;
         } catch (IOException e) {
             logger.error("http get error! url:"+url,e);

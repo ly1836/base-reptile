@@ -19,4 +19,6 @@ public class ClassifyService extends BaseDao {
     public List<Classify> getClassifyByCondition(Classify classify){
         return getSession().selectList("getClassifyByCondition");
     }
+
+
 }

@@ -14,10 +14,12 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,38 +87,43 @@ public class HttpUtil {
     public static String doGet(String httpUrl,Map<String,Object> headerMap, String proxyIp, Integer proxyPort) {
         String response = null;
         try {
-//            // 創建httpGet實例
-//            HttpGet httpGet = new HttpGet(httpUrl);
-//            if (StringUtilExtend.isValidString(proxyIp) && proxyPort != null) {
-//                // 設置代理IP，設置連接超時時間 、 設置 請求讀取數據的超時時間 、 設置從connect Manager獲取Connection超時時間、
-//                HttpHost proxy = new HttpHost(proxyIp, proxyPort);
-//                RequestConfig requestConfig = RequestConfig.custom()
-//                        .setProxy(proxy)
-//                        .setConnectTimeout(10000)
-//                        .setSocketTimeout(10000)
-//                        .setConnectionRequestTimeout(3000)
-//                        .build();
-//                httpGet.setConfig(requestConfig);
-//            }
-//            // 設置請求頭消息
-//            httpGet.setHeader("Content-type", "application/x-www-form-urlencoded");
-//            httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0");
-//            HttpClient httpClient = HttpClients.createDefault();
-//            //SSL设置
-//            if (httpUrl.contains("https")) {
-//                //采用绕过验证的方式处理https请求
-//                SSLContext sslcontext = createIgnoreVerifySSL();
-//
-//                // 设置协议http和https对应的处理socket链接工厂的对象
-//                Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-//                        .register("http", PlainConnectionSocketFactory.INSTANCE)
-//                        .register("https", new SSLConnectionSocketFactory(sslcontext))
-//                        .build();
-//                PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-//                httpClient = HttpClients.custom().setConnectionManager(connManager).build();
-//                response = httpRequest(httpClient, httpGet);
-//            }
-            response=HttpUtilWithPool.get(httpUrl,proxyIp,proxyPort,headerMap);
+            CloseableHttpClient httpCilent2 = HttpClients.createDefault();
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(5000)   //设置连接超时时间
+                    .setConnectionRequestTimeout(5000) // 设置请求超时时间
+                    .setSocketTimeout(5000)
+                    .setRedirectsEnabled(true)//默认允许自动重定向
+                    .build();
+            HttpGet httpGet2 = new HttpGet(httpUrl);
+            httpGet2.setConfig(requestConfig);
+
+            //设置http请求头
+            if(headerMap != null && !headerMap.isEmpty()){
+                for(Map.Entry<String,Object> entry : headerMap.entrySet()){
+                    httpGet2.setHeader(entry.getKey(),entry.getValue().toString());
+                }
+            }
+
+            try {
+                HttpResponse httpResponse = httpCilent2.execute(httpGet2);
+                if(httpResponse.getStatusLine().getStatusCode() == 200){
+                    response = EntityUtils.toString(httpResponse.getEntity());//获得返回的结果
+
+                }else if(httpResponse.getStatusLine().getStatusCode() == 400){
+                    //..........
+                }else if(httpResponse.getStatusLine().getStatusCode() == 500){
+                    //.............
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    httpCilent2.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            //response=HttpUtilWithPool.get(httpUrl,proxyIp,proxyPort,headerMap);
         } catch (Exception e) {
             log.error("doGet ERROR", e);
         }
@@ -133,7 +140,7 @@ public class HttpUtil {
      * @param proxyPort
      * @return
      */
-    public static String doGetWithAcceptLanguage(String httpUrl, String proxyIp, Integer proxyPort) {
+    public static String doGetWithAcceptLanguage(String httpUrl,Map<String,Object> headerMap, String proxyIp, Integer proxyPort) {
         String response = null;
         try {
             // 創建httpGet實例
@@ -153,6 +160,13 @@ public class HttpUtil {
             httpGet.setHeader("accept-language", "zh-CN,zh;q=0.8");
             httpGet.setHeader("Content-type", "application/x-www-form-urlencoded");
             httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0");
+            //设置http请求头
+            if(headerMap != null && !headerMap.isEmpty()){
+                for(Map.Entry<String,Object> entry : headerMap.entrySet()){
+                    httpGet.setHeader(entry.getKey(),entry.getValue().toString());
+                }
+            }
+
             HttpClient httpClient = HttpClients.createDefault();
             //SSL设置
             if (httpUrl.contains("https")) {
@@ -338,7 +352,7 @@ public class HttpUtil {
     }
 
 
-    public String getContext(HttpResponse httpResponse){
+    public static String getContext(HttpResponse httpResponse){
         String responseContent = null;
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(httpResponse.getEntity().getContent());

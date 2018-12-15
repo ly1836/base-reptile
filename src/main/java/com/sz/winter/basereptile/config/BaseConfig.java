@@ -8,9 +8,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>
@@ -20,6 +22,13 @@ import java.io.IOException;
 @Configuration
 public class BaseConfig {
 
+    /**
+     * <p>
+     *     mybatis核心配置
+     * </p>
+     * @param proxyFactoryBean 数据源代理工程
+     * @return SqlSessionFactoryBean
+     */
     @Bean
     @ConfigurationProperties(prefix = "mybatis")
     public SqlSessionFactoryBean sqlSessionFactoryBean(@Autowired ProxyFactoryBean proxyFactoryBean) {
@@ -36,15 +45,47 @@ public class BaseConfig {
     }
 
 
+    /**
+     * <p>
+     *      存储目标数据源
+     * </p>
+     * @param dataSource 数据源
+     * @return HotSwappableTargetSource
+     */
     @Bean("hotSwappableTargetSource")
     public HotSwappableTargetSource hotSwappableTargetSource(@Autowired DataSource dataSource){
         return new HotSwappableTargetSource(dataSource);
     }
 
+    /**
+     * <p>
+     *     数据源代理
+     * </p>
+     * @param hotSwappableTargetSource 存储目标数据源
+     * @return ProxyFactoryBean
+     */
     @Bean("proxyFactoryBean")
     public ProxyFactoryBean proxyFactoryBean(@Autowired HotSwappableTargetSource hotSwappableTargetSource){
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
         proxyFactoryBean.setTargetSource(hotSwappableTargetSource);
         return proxyFactoryBean;
+    }
+
+    /**
+     * <p>
+     *     spring 线程池配置
+     * </p>
+     * @return ThreadPoolTaskExecutor
+     */
+    @Bean("taskExecutor")
+    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(60);
+        threadPoolTaskExecutor.setKeepAliveSeconds(200);
+        threadPoolTaskExecutor.setMaxPoolSize(60);
+        threadPoolTaskExecutor.setQueueCapacity(10000);
+        threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+
+        return threadPoolTaskExecutor;
     }
 }

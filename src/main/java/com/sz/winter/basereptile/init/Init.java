@@ -49,11 +49,12 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
             }*/
 
             //加载列表信息到Redis中
-            loadClassifyListInfoToRedis();
+            //loadClassifyListInfoToRedis();
 
+            new Thread(()->classifyListModule.getVideoInfo()).start();
 
-        }catch (Exception ex){
-            logger.error("==============项目启动异常:{}============================",ex);
+        } catch (Exception ex) {
+            logger.error("==============项目启动异常:{}============================", ex);
         }
     }
 
@@ -61,29 +62,37 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
     /**
      * 加载列表信息到Redis中
      */
-    private void loadClassifyListInfoToRedis(){
+    private void loadClassifyListInfoToRedis() {
         try {
             List<ClassifyList> classifyLists = classifyListService.listCalssifyList();
+            Pipeline pipeline = RedisService.getPipeline();
 
-            //key:网站ID   value:<key:类别ID>
+            /*//key:网站ID   value:<key:类别ID>
             Map<Long, Map<Long, List<ClassifyList>>> collect =
                     classifyLists
                             .stream()
                             .collect(Collectors.groupingBy(ClassifyList::getWebsitId, Collectors.groupingBy(ClassifyList::getClassifyId)));
 
-            Pipeline pipeline = RedisService.getPipeline();
-
             collect.forEach((key,value)-> value.forEach((k, v)->{
                 String keys = Constant.CLASSIFY_LIST + key;
 
                 pipeline.hset(keys,k.toString(), JSONObject.toJSONString(value));
-            }));
+            }));*/
+
+            int size = classifyLists.size();
+            for (int i = 0; i < size; i++) {
+                ClassifyList classifyList = classifyLists.get(i);
+
+                String keys = Constant.CLASSIFY_LIST + classifyList.getWebsitId() + ":" + classifyList.getClassifyId();
+                pipeline.sadd(keys,JSONObject.toJSONString(classifyList));
+            }
 
             pipeline.sync();
             pipeline.close();
 
-        }catch (Exception ex){
-            logger.error("加载列表信息到Redis中异常:{}",ex);
+            logger.info("================加载视频列表信息到Redis中完成!!!============================");
+        } catch (Exception ex) {
+            logger.error("加载列表信息到Redis中异常:{}", ex);
         }
     }
 }

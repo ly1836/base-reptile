@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="dao.winter">
+    <sql id="classifyListSql">id,createDate_ createDate, lastUpdate_ lastUpdate, status_ status, websitId_ websitId, classifyId_ classifyId,
+        surfacePlotUrl_ surfacePlotUrl, describes_ as describes, duration_ duration, heat_ heat,contextUrl_ contextUrl,isDownload_ isDownload</sql>
 
     <!-- 批量插入列表 -->
     <insert id="insertBatchClassifyList" parameterType="java.util.List">
@@ -15,9 +17,16 @@
 
     <!-- 获取全部列表 -->
     <select id="listCalssifyList" resultType="com.sz.winter.basereptile.model.ClassifyList">
-        select id,createDate_ createDate, lastUpdate_ lastUpdate, status_ status, websitId_ websitId, classifyId_ classifyId,
-        surfacePlotUrl_ surfacePlotUrl, describes_ as describes, duration_ duration, heat_ heat,contextUrl_ contextUrl,isDownload_ isDownload
+        select <include refid="classifyListSql"/>
         from classify_list
     </select>
+
+    <!-- 获取未拉去的视频信息列表 -->
+    <select id="getNotDowloadVideo" resultType="com.sz.winter.basereptile.model.ClassifyList">
+        SELECT <include refid="classifyListSql"/>
+        from classify_list cl  where id not in (SELECT classifyListId_ from video_fragmentation )
+        and cl.status_ = 1
+    </select>
+
 
 </mapper>
