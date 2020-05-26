@@ -3,6 +3,10 @@ package com.sz.winter.basereptile.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,20 +54,41 @@ public class BaseUtil {
 
     /**
      * <p>
-     * 下载网络图片,指定文件名(可选)
+     * 下载网络文件,指定存储文件名(可选)
      * </p>
      *
      * @param sourceUrl 网络路径
      * @param fileName  文件名
+     * @param append 是否追加文件
      * @return boolean true:成功  false:失败
      */
-    public static boolean dowloadImage(String sourceUrl, String fileName) {
+    public static boolean dowloadNerworkFile(String sourceUrl, String fileName,boolean append) {
         try {
             logger.info("Downloading File From: " + sourceUrl);
 
             URL url = new URL(sourceUrl);
+
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {return null;}
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType){}
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType){}
+                    }
+            };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
             InputStream inputStream = url.openStream();
-            OutputStream outputStream = new FileOutputStream(fileName);
+
+            OutputStream outputStream;
+            //判断是否追加写入文件
+            if(append){
+                outputStream = new FileOutputStream(fileName,true);
+            }else {
+                outputStream = new FileOutputStream(fileName);
+            }
 
             byte[] buffer = new byte[2048];
 
@@ -73,6 +98,7 @@ public class BaseUtil {
                 outputStream.write(buffer, 0, length);
             }
 
+            outputStream.flush();
             inputStream.close();
             outputStream.close();
 

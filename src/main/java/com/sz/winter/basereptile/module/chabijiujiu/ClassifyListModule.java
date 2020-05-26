@@ -6,6 +6,8 @@ import com.sz.winter.basereptile.config.RedisService;
 import com.sz.winter.basereptile.model.Classify;
 import com.sz.winter.basereptile.model.ClassifyList;
 import com.sz.winter.basereptile.model.VideoFragmentation;
+import com.sz.winter.basereptile.model.resp.VideoFragmentationInfoResp;
+import com.sz.winter.basereptile.task.chabijiujiu.DowloadVideoTask;
 import com.sz.winter.basereptile.util.BaseUtil;
 import com.sz.winter.basereptile.util.HttpUtil;
 import com.sz.winter.basereptile.util.HttpUtilWithPool;
@@ -16,8 +18,12 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -271,11 +277,11 @@ public class ClassifyListModule extends Endpoint {
                         String surfacePlotUrl = classifyList.getSurfacePlotUrl();
 
                         //拼接完整磁盘路径文件名
-                        String fileName = getSurfacePlotDir() + System.currentTimeMillis()  + BaseUtil.random(1, 999) + getSurfacePlotsuffix();
+                        String fileName = getSurfacePlotDir() + System.currentTimeMillis() + BaseUtil.random(1, 999) + getSurfacePlotsuffix();
 
-                        boolean flag = BaseUtil.dowloadImage(surfacePlotUrl, fileName);
+                        boolean flag = BaseUtil.dowloadNerworkFile(surfacePlotUrl, fileName, false);
 
-                        if(flag){
+                        if (flag) {
                             ClassifyList cl = new ClassifyList();
                             cl.setId(classifyList.getId());
                             cl.setSurfacePlotDir(fileName);
@@ -295,14 +301,29 @@ public class ClassifyListModule extends Endpoint {
 
     /**
      * <p>
-     *     下载未下载的视频
+     * 下载未下载的视频
      * </p>
      */
-    public void dowloadVideo(){
+    public void dowloadVideo() {
         try {
+            //加载未下载的及下载中的
+            VideoFragmentation vft = new VideoFragmentation();
+            vft.setDowloadType(1);
+            List<VideoFragmentationInfoResp> videoFragmentationList = videoFragmentationService.getVideoFragmentationInfoRespv1(vft);
 
-        }catch (Exception ex){
-            logger.error("下载未下载的视频异常:{}",ex);
+            int size = videoFragmentationList.size();
+            for (int i = 0; i < size; i++) {
+                VideoFragmentationInfoResp resp = videoFragmentationList.get(i);
+                DowloadVideoTask dowloadVideoTask = new DowloadVideoTask(resp,classifyListService,videoFragmentationService,this);
+                //暂时放弃多线程策略
+                //taskExecutor.execute(dowloadVideoTask);
+
+                dowloadVideoTask.run();
+
+                Thread.sleep(1000);
+            }
+        } catch (Exception ex) {
+            logger.error("下载未下载的视频异常:{}", ex);
         }
     }
 }

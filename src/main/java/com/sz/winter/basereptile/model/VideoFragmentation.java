@@ -18,6 +18,12 @@ public class VideoFragmentation extends BaseModel {
     //0:待下载  1:已下载 2:下载中
     private Integer dowloadType;
 
+    //视频磁盘路径
+    private String videoDir;
+
+    //视频MD5值
+    private String videoMd5;
+
     public Long getClassifyListId() {
         return classifyListId;
     }
@@ -40,6 +46,22 @@ public class VideoFragmentation extends BaseModel {
 
     public void setDowloadType(Integer dowloadType) {
         this.dowloadType = dowloadType;
+    }
+
+    public String getVideoDir() {
+        return videoDir;
+    }
+
+    public void setVideoDir(String videoDir) {
+        this.videoDir = videoDir;
+    }
+
+    public String getVideoMd5() {
+        return videoMd5;
+    }
+
+    public void setVideoMd5(String videoMd5) {
+        this.videoMd5 = videoMd5;
     }
 
     public VideoFragmentation() {

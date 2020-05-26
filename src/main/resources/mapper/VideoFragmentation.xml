@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="dao.winter">
-    <sql id="fragmentationColumn">id,createDate_ createDate, lastUpdate_ lastUpdate, status_ status,classifyListId_ classifyListId,palyload_ palyload_,dowloadType_ dowloadType_</sql>
+    <sql id="fragmentationColumn">id,createDate_ createDate, lastUpdate_ lastUpdate, status_ status,
+      classifyListId_ classifyListId,palyload_ palyload,dowloadType_ dowloadType</sql>
 
     <!-- 批量插入视频分片信息 -->
     <insert id="insertBatchVideoFragmentation" parameterType="java.util.List">
@@ -28,5 +29,54 @@
             and dowloadType_ = #{dowloadType}
         </if>
     </select>
+
+    <!-- 获取分片视频详细信息v1 -->
+    <select id="selectVideoFragmentationInfoListv1" parameterType="com.sz.winter.basereptile.model.VideoFragmentation"
+            resultType="com.sz.winter.basereptile.model.resp.VideoFragmentationInfoResp">
+        SELECT w.name_ websiteName,cl.classifyId_ classifyId,vf.id,vf.createDate_ createDate, vf.lastUpdate_ lastUpdate, vf.status_ status,
+        vf.classifyListId_ classifyListId,vf.palyload_ palyload,vf.dowloadType_ dowloadType
+        from video_fragmentation vf , classify_list cl , website w
+        where vf.classifyListId_ = cl.id and cl.websitId_ = w.id
+        <if test="dowloadType != null">
+            and vf.dowloadType_ != #{dowloadType}
+        </if>
+        ORDER BY cl.classifyId_ asc
+    </select>
+    <!-- 获取分片视频详细信息v2 -->
+    <select id="selectVideoFragmentationInfoListv2" parameterType="com.sz.winter.basereptile.model.VideoFragmentation"
+            resultType="com.sz.winter.basereptile.model.resp.VideoFragmentationInfoResp">
+        SELECT w.name_ websiteName,cl.classifyId_ classifyId,vf.id,vf.createDate_ createDate, vf.lastUpdate_ lastUpdate, vf.status_ status,
+        vf.classifyListId_ classifyListId,vf.palyload_ palyload,vf.dowloadType_ dowloadType
+        from video_fragmentation vf , classify_list cl , website w
+        where vf.classifyListId_ = cl.id and cl.websitId_ = w.id
+        <if test="dowloadType != null">
+            and vf.dowloadType_ = #{dowloadType}
+        </if>
+        ORDER BY cl.classifyId_ asc
+    </select>
+
+    <!-- 更新列表详情信息 -->
+    <update id="updateVideoFragmentation" parameterType="com.sz.winter.basereptile.model.VideoFragmentation">
+        update video_fragmentation
+        <set>
+            <if test="id!=null">id=#{id,jdbcType=BIGINT},</if>
+            <if test="createDate!=null">createDate_=#{createDate,jdbcType=TIMESTAMP},</if>
+            <if test="lastUpdate!=null">lastUpdate_=#{lastUpdate,jdbcType=TIMESTAMP},</if>
+            <if test="status!=null">status_=#{status},</if>
+            <if test="classifyListId!=null">classifyListId_=#{classifyListId},</if>
+            <if test="palyload!=null">palyload_=#{palyload},</if>
+            <if test="dowloadType!=null">dowloadType_=#{dowloadType},</if>
+            <if test="videoDir!=null">videoDir_=#{videoDir},</if>
+            <if test="videoMd5!=null">videoMd5_=#{videoMd5}</if>
+        </set>
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="classifyListId != null">
+                and classifyListId_ = #{classifyListId}
+            </if>
+        </where>
+    </update>
 
 </mapper>

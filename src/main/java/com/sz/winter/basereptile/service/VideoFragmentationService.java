@@ -2,6 +2,7 @@ package com.sz.winter.basereptile.service;
 
 import com.sz.winter.basereptile.base.BaseDao;
 import com.sz.winter.basereptile.model.VideoFragmentation;
+import com.sz.winter.basereptile.model.resp.VideoFragmentationInfoResp;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,5 +38,29 @@ public class VideoFragmentationService extends BaseDao {
      */
     public List<VideoFragmentation> getVideoFragmentationList(){
         return getSession().selectList("selectVideoFragmentationList");
+    }
+
+    /**
+     * <p>
+     *     获取分片视频详细信息v1(除当前下载条件外)
+     * </p>
+     * @return List
+     */
+    public List<VideoFragmentationInfoResp> getVideoFragmentationInfoRespv1(VideoFragmentation vf){
+        return getSession().selectList("selectVideoFragmentationInfoListv1",vf);
+    }
+    /**
+     * <p>
+     *     获取分片视频详细信息v2(只有当前下载条件)
+     * </p>
+     * @return List
+     */
+    public List<VideoFragmentationInfoResp> getVideoFragmentationInfoRespv2(VideoFragmentation vf){
+        return getSession().selectList("selectVideoFragmentationInfoListv2",vf);
+    }
+
+
+    public void updateVideoFragmentation(VideoFragmentation videoFragmentations){
+        getSession().update("updateVideoFragmentation",videoFragmentations);
     }
 }

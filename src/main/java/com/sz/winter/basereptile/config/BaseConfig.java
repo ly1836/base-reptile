@@ -80,10 +80,10 @@ public class BaseConfig {
     @Bean("taskExecutor")
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(60);
-        threadPoolTaskExecutor.setKeepAliveSeconds(200);
-        threadPoolTaskExecutor.setMaxPoolSize(60);
-        threadPoolTaskExecutor.setQueueCapacity(10000);
+        threadPoolTaskExecutor.setCorePoolSize(10);
+        threadPoolTaskExecutor.setKeepAliveSeconds(60 * 60 * 60);
+        threadPoolTaskExecutor.setMaxPoolSize(10000 * 10);
+        threadPoolTaskExecutor.setQueueCapacity(100);
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 
         return threadPoolTaskExecutor;

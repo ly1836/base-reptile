@@ -50,23 +50,23 @@ public class BaseReptileApplicationTests {
     }
 
 
-    //@Test
+    @Test
     public void compoundVideo(){
         try{
-            String fileName = "E:\\1.ts";
-            //String website = "https://lianxiangfiles.oss-cn-beijing.aliyuncs.com/video/activity/cf_znq.mp4";
+            //String fileName = "E:\\1.ts";
+            String website = "https://cdn.m3u8oxxb.pw/index.php/m3u8/ts/4ad4QDH85Ldka3Z6_L4w04Ygiz_UT95bzl-FnFtK-gImvwoA91YXunQyQj56DAhXNtkWJkz5d1M.jpg";
 
             //System.out.println("Downloading File From: " + website);
 
-            //URL url = new URL(website);
-            //InputStream inputStream = url.openStream();
-            InputStream inputStream = new FileInputStream(new File("E:\\2.ts"));
-            OutputStream outputStream = new FileOutputStream(fileName,true);
+            URL url = new URL(website);
+            InputStream inputStream = url.openStream();
+            //InputStream inputStream = new FileInputStream(new File("E:\\2.ts"));
+            OutputStream outputStream = new FileOutputStream("F:\\chabijiujiu\\video\\1.ts",true);
             System.out.println(inputStream.available());
 
             byte[] buffer = new byte[2048];
 
-            int length = 0;
+            int length;
 
             int sum = 0;
             while ((length = inputStream.read(buffer)) != -1) {
@@ -84,5 +84,8 @@ public class BaseReptileApplicationTests {
             System.out.println("Exception: " + e.getMessage());
         }
     }
+
+
+
 
 }
