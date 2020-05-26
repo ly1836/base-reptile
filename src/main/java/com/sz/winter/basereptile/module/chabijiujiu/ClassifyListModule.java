@@ -311,10 +311,8 @@ public class ClassifyListModule extends Endpoint {
             vft.setDowloadType(1);
             List<VideoFragmentationInfoResp> videoFragmentationList = videoFragmentationService.getVideoFragmentationInfoRespv1(vft);
 
-            int size = videoFragmentationList.size();
-            for (int i = 0; i < size; i++) {
-                VideoFragmentationInfoResp resp = videoFragmentationList.get(i);
-                DowloadVideoTask dowloadVideoTask = new DowloadVideoTask(resp,classifyListService,videoFragmentationService,this);
+            for (VideoFragmentationInfoResp resp : videoFragmentationList) {
+                DowloadVideoTask dowloadVideoTask = new DowloadVideoTask(resp, classifyListService, videoFragmentationService, this);
                 //暂时放弃多线程策略
                 //taskExecutor.execute(dowloadVideoTask);
 
@@ -323,7 +321,7 @@ public class ClassifyListModule extends Endpoint {
                 Thread.sleep(1000);
             }
         } catch (Exception ex) {
-            logger.error("下载未下载的视频异常:{}", ex);
+            logger.error("下载未下载的视频异常:", ex);
         }
     }
 }

@@ -62,7 +62,7 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
             loadvideoFragmentationToRedis();
 
             //获取视频分信息
-            //new Thread(()->classifyListModule.getVideoInfo()).start();
+            new Thread(()->classifyListModule.getVideoInfo()).start();
 
             //下载视频封面图
             //new Thread(() -> classifyListModule.dowloadSurfacePlot()).start();
@@ -71,7 +71,7 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
             taskExecutor.execute(new Thread(() ->classifyListModule.dowloadVideo()));
 
         } catch (Exception ex) {
-            logger.error("==============项目启动异常:{}============================", ex);
+            logger.error("==============项目启动异常:", ex);
         }
     }
 
@@ -97,9 +97,7 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
             }));*/
 
             int size = classifyLists.size();
-            for (int i = 0; i < size; i++) {
-                ClassifyList classifyList = classifyLists.get(i);
-
+            for (ClassifyList classifyList : classifyLists) {
                 String keys = Constant.CLASSIFY_LIST + classifyList.getWebsitId() + ":" + classifyList.getClassifyId();
                 pipeline.sadd(keys, JSONObject.toJSONString(classifyList));
             }
@@ -109,7 +107,7 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
 
             logger.info("================加载视频列表信息到Redis中完成!!!============================");
         } catch (Exception ex) {
-            logger.error("加载列表信息到Redis中异常:{}", ex);
+            logger.error("加载列表信息到Redis中异常:", ex);
         }
     }
 
@@ -119,7 +117,7 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
      *     加载视频分片信息到Redis中
      * </p>
      */
-    public void loadvideoFragmentationToRedis() {
+    private void loadvideoFragmentationToRedis() {
         try {
             //加载未下载的
             VideoFragmentation vf = new VideoFragmentation();
@@ -129,41 +127,39 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
             Pipeline pipeline = RedisService.getPipeline();
 
             int size = videoFragmentationList.size();
-            for (int i = 0; i < size; i++) {
+            for (VideoFragmentationInfoResp videoFragmentationInfoResp : videoFragmentationList) {
                 try {
-                    VideoFragmentationInfoResp resp = videoFragmentationList.get(i);
-
                     //redis key
-                    String key = Constant.VIDEO_FRAGMENTATION + resp.getWebsiteName() + ":" + resp.getClassifyId() + ":" + resp.getClassifyListId();
+                    String key = Constant.VIDEO_FRAGMENTATION + videoFragmentationInfoResp.getWebsiteName() + ":" + videoFragmentationInfoResp.getClassifyId() + ":" + videoFragmentationInfoResp.getClassifyListId();
 
-                    String[] palyloads = resp.getPalyload().trim().replaceAll("\n","").split(";");
+                    String[] palyloads = videoFragmentationInfoResp.getPalyload().trim().replaceAll("\n", "").split(";");
 
-                    Integer num = 0;
-                    for(String palyload : palyloads){
+                    int num = 0;
+                    for (String palyload : palyloads) {
                         try {
                             //ts/5771kFo2ZYxI-U53hudJlWdqquusuULQy5l1he27cqwwIvLpxYlutXhiU4wAoMvq4NE3tqlYuQU.jpg
                             String fg = palyload.split(",")[1];
 
-                            pipeline.zadd(key,num.doubleValue(),fg);
+                            pipeline.zadd(key, (double) num, fg);
                             num++;
-                        }catch (Exception ex){
-                            logger.error("{}",ex);
+                        } catch (Exception ex) {
+                            logger.error("redis 通道异常:", ex);
                         }
                     }
 
                     pipeline.sync();
 
-                }catch (Exception ex){
-                    logger.error("{}",ex);
+                } catch (Exception ex) {
+                    logger.error("", ex);
                 }
             }
 
             pipeline.close();
 
-            logger.info("===============加载视频分片信息["+size+"]到Redis中成功!!=====================");
+            logger.info("===============加载视频分片信息[{}]到Redis中成功!!=====================",size);
 
         } catch (Exception ex) {
-            logger.error("加载视频分片信息到Redis中异常:{}", ex);
+            logger.error("加载视频分片信息到Redis中异常:");
         }
     }
 }

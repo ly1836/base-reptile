@@ -115,7 +115,7 @@ public class DowloadVideoTask implements Runnable {
                         zrange = jedis.zrange(key, 0, 0);
                     }
                 } catch (Exception ex) {
-                    logger.error("{}", ex);
+                    logger.error("", ex);
                 }
             }
 
